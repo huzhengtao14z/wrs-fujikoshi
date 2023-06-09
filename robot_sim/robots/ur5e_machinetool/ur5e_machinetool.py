@@ -30,7 +30,7 @@ class UR5EConveyorBelt(ri.RobotInterface):
         self.base_stand.lnks[0]['rgba'] = [.35, .35, .35, 1]
         self.base_stand.reinitialize()
         # machine
-        self.machine = machine.MachineTool(pos = np.array([0,-0.7,-0.82]), rotmat=rm.rotmat_from_axangle(np.array([0,0,1]), np.pi), name = 'machine', enable_cc=False)
+        self.machine = machine.MachineTool(pos = pos + np.array([0,-0.7,-0.82]), rotmat=rm.rotmat_from_axangle(np.array([0,0,1]), np.pi), name = 'machine', enable_cc=False)
         # self.machine.door_to(0.99)
         # arm
         arm_homeconf = np.zeros(6)
@@ -39,7 +39,7 @@ class UR5EConveyorBelt(ri.RobotInterface):
         arm_homeconf[2] = math.pi / 3
         arm_homeconf[3] = -math.pi / 2
         arm_homeconf[4] = -math.pi / 2
-        self.arm = rbt.UR5E(pos=np.array([0,0,0]),
+        self.arm = rbt.UR5E(pos=pos,
                             rotmat=self.base_stand.jnts[-1]['gl_rotmatq'],
                             homeconf=arm_homeconf,
                             name='arm', enable_cc=False)
