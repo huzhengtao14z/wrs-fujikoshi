@@ -28,13 +28,13 @@ if __name__ == '__main__':
     # print(robot_s.get_gl_tcp("arm"))
     # base.run()
     robot_s.gen_meshmodel(rgba=(0,1,0,0.5)).attach_to(base)
-    base.run()
+
 
     rrtc_planner = rrtc.RRTConnect(robot_s)
     path = rrtc_planner.plan(component_name="arm",
                              start_conf=start_conf,
                              goal_conf=jnt_values,
-                             ext_dist=1,
+                             ext_dist=0.05,
                              max_time=300)
     for pose in path:
         robot_s.fk("arm", pose)
