@@ -317,11 +317,11 @@ if __name__ == '__main__':
     gm.gen_frame().attach_to(base)
     robot_s = UR5EConveyorBelt(enable_cc=True)
     robot_s.jaw_to(.02)
-    robot_s.gen_meshmodel(toggle_tcpcs=False, toggle_jntscs=False).attach_to(base)
+    robot_s.gen_meshmodel(toggle_tcpcs=False, toggle_jntscs=False, is_machine=True).attach_to(base)
     tgt_pos = np.array([.25, .2, .15])
     tgt_rotmat = rm.rotmat_from_axangle([0, 1, 0], math.pi * 2 / 3)
     # gm.gen_frame(pos=tgt_pos, rotmat=tgt_rotmat).attach_to(base)
-    robot_s.show_cdprimit()
+    # robot_s.show_cdprimit()
     # robot_s.gen_stickmodel().attach_to(base)
     base.run()
     component_name = 'arm'
