@@ -23,7 +23,7 @@ class dh_device(object) :
             ret = -1
         return ret
 
-    def disconnect_device() :
+    def disconnect_device(self):
         if(serialPort.isOpen()) :
             serialPort.close()
         else :

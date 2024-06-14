@@ -16,29 +16,29 @@ def modbus_gripper() :
     speed = 100
 
     m_gripper.open(port,baudrate)
-    m_gripper.Initialization();
+    m_gripper.Initialization()
     print('Send grip init')
 
     while(initstate != 1) :
-        initstate = m_gripper.GetInitState();
+        initstate = m_gripper.GetInitState()
         sleep(0.2)
         
     m_gripper.SetTargetForce(force)
     m_gripper.SetTargetSpeed(speed)
-    m_gripper.close()
-    # while True:
-    #     g_state = 0
-    #     m_gripper.SetTargetPosition(0)
-    #     while(g_state == 0) :
-    #         g_state = m_gripper.GetGripState()
-    #         sleep(0.2)
-    #
-    #     g_state = 0;
-    #     m_gripper.SetTargetPosition(1000)
-    #     while(g_state == 0) :
-    #         g_state = m_gripper.GetGripState()
-    #         sleep(0.2)
     # m_gripper.close()
+    # while True:
+    g_state = 0
+    m_gripper.SetTargetPosition(0)
+    while(g_state == 0) :
+        g_state = m_gripper.GetGripState()
+        sleep(0.2)
+
+    g_state = 0
+    m_gripper.SetTargetPosition(1000)
+    while(g_state == 0) :
+        g_state = m_gripper.GetGripState()
+        sleep(0.2)
+    m_gripper.close()
 
 def socket_gripper() :
     ip='192.168.1.29'

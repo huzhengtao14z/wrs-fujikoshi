@@ -31,7 +31,7 @@ class dh_modbus_gripper(object):
             print('open successful')
             return ret
 
-    def close() :
+    def close(self):
         m_device.disconnect_device()
 
     def WriteRegisterFunc(self,index, value) :
