@@ -41,10 +41,10 @@ class GOFA5(ri.RobotInterface):
         self.hnd = hnd.Dh60(pos=self.arm.jnts[-1]['gl_posq'],
                                    rotmat=self.arm.jnts[-1]['gl_rotmatq'],
                             name='hnd_s', enable_cc=False)
-        self.maker = cm.CollisionModel(os.path.join(this_dir, "meshes", "box.STL"), cdprimit_type="box")
-        self.maker.set_rgba([1,0,0,1])
-        self.maker.set_pos(self.arm.jnts[-1]['gl_posq'])
-        self.maker.set_rotmat(self.arm.jnts[-1]['gl_rotmatq'])
+        # self.maker = cm.CollisionModel(os.path.join(this_dir, "meshes", "box.STL"), cdprimit_type="box")
+        # self.maker.set_rgba([1,0,0,1])
+        # self.maker.set_pos(self.arm.jnts[-1]['gl_posq'])
+        # self.maker.set_rotmat(self.arm.jnts[-1]['gl_rotmatq'])
         # tool center point
         self.arm.jlc.tcp_jnt_id = -1
         self.arm.jlc.tcp_loc_pos = self.hnd.jaw_center_pos
@@ -142,8 +142,8 @@ class GOFA5(ri.RobotInterface):
             self.hnd_dict[component_name].fix_to(
                 pos=self.manipulator_dict[component_name].jnts[-1]['gl_posq'],
                 rotmat=self.manipulator_dict[component_name].jnts[-1]['gl_rotmatq'])
-            self.maker.set_pos(self.manipulator_dict[component_name].jnts[-1]['gl_posq'])
-            self.maker.set_rotmat(self.manipulator_dict[component_name].jnts[-1]['gl_rotmatq'])
+            # self.maker.set_pos(self.manipulator_dict[component_name].jnts[-1]['gl_posq'])
+            # self.maker.set_rotmat(self.manipulator_dict[component_name].jnts[-1]['gl_rotmatq'])
             update_oih(component_name=component_name)
             return status
 
@@ -268,7 +268,7 @@ class GOFA5(ri.RobotInterface):
             self.hnd.gen_meshmodel(toggle_tcpcs=False,
                                    toggle_jntscs=toggle_jntscs,
                                    rgba=rgba).attach_to(meshmodel)
-            copy.deepcopy(self.maker).attach_to(meshmodel)
+            # copy.deepcopy(self.maker).attach_to(meshmodel)
 
         if is_machine:
             self.machine.gen_meshmodel(toggle_tcpcs=False,
