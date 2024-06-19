@@ -383,7 +383,7 @@ class JLChainIK(object):
                         random_restart = True
                         continue
                     else:
-                        print('No feasible IK solution!')
+                        # print('No feasible IK solution!')
                         break
                 else:
                     # -- notes --
@@ -464,7 +464,7 @@ class JLChainIK(object):
                                            tcp_loc_rotmat=tcp_loc_rotmat, toggle_jntscs=True).attach_to(base)
             # base.run()
         self.jlc_object.fk(jnt_values_bk)
-        print('Failed to solve the IK, returning None.')
+        # print('Failed to solve the IK, returning None.')
         return None
 
     def numik_rel(self, deltapos, deltarotmat, tcp_jnt_id=None, tcp_loc_pos=None, tcp_loc_rotmat=None):

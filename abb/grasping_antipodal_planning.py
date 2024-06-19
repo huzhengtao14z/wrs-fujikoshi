@@ -18,7 +18,7 @@ gripper_s = dh.Dh60()
 grasp_info_list = gpa.plan_grasps(gripper_s, object_tube,
                                   angle_between_contact_normals=math.radians(177),
                                   openning_direction='loc_x',
-                                  max_samples=5, min_dist_between_sampled_contact_points=.005,
+                                  max_samples=10, min_dist_between_sampled_contact_points=.005,
                                   contact_offset=.005)
 gpa.write_pickle_file('box', grasp_info_list, './', 'dh60_grasps.pickle')
 # grasp_info_list = gpa.load_pickle_file('holder', './', 'cobg_holder_grasps.pickle')

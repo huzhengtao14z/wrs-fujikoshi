@@ -4,6 +4,7 @@ import numpy as np
 import basis.robot_math as rm
 import robot_sim._kinematics.jlchain as jl
 import robot_sim.manipulators.manipulator_interface as mi
+import modeling.model_collection as mc
 
 class GOFA5(mi.ManipulatorInterface):
 
@@ -29,8 +30,8 @@ class GOFA5(mi.ManipulatorInterface):
         self.jlc.jnts[5]['loc_motionax'] = np.array([0, 1, 0])
 
         self.jlc.jnts[6]['loc_pos'] = np.array([0.068+0.033, -0.0745, 0.08])
-        self.jlc.jnts[6]['loc_motionax'] = np.array([1, 0, 0])
-        self.jlc.jnts[7]['loc_rotmat'] = rm.rotmat_from_euler(0, math.pi * 1 / 2, 0)
+        self.jlc.jnts[6]['loc_motionax'] = np.array([0, 0, 1])
+        self.jlc.jnts[6]['loc_rotmat'] = rm.rotmat_from_euler(0, math.pi*1/2, 0)
         # self.jlc.jnts[7]['loc_pos'] = np.array([0.033, 0, 0])
         # self.jlc.jnts[7]['loc_rotmat'] = rm.rotmat_from_euler(0,math.pi*1/2,0)
         # self.jlc.jnts[7]['loc_motionax'] = np.array([1, 0, 0])
@@ -82,6 +83,7 @@ class GOFA5(mi.ManipulatorInterface):
         self.jlc.lnks[6]['mass'] = 0.8
         self.jlc.lnks[6]['mesh_file'] = os.path.join(this_dir, "meshes", "LINK06.STL")
         self.jlc.lnks[6]['rgba'] = [.7,.7,.7, 1]
+
         self.jlc.reinitialize()
         # collision checker
         if enable_cc:
