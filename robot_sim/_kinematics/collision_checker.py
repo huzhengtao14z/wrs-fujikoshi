@@ -4,7 +4,6 @@ import basis.data_adapter as da
 import modeling.model_collection as mc
 from panda3d.core import NodePath, CollisionTraverser, CollisionHandlerQueue, BitMask32
 
-
 class CollisionChecker(object):
     """
     A fast collision checker that allows maximum 32 collision pairs
@@ -113,13 +112,14 @@ class CollisionChecker(object):
         cdnp_to_delete = self.np.getChild(cdobj_info['cdprimit_childid'])
         self.ctrav.removeCollider(cdnp_to_delete)
         this_cdmask = cdnp_to_delete.node().getFromCollideMask()
+        this_cdmask_exclude_ext = this_cdmask & ~self._bitmask_ext
         for cdlnk in cdobj_info['into_list']:
             cdnp = self.np.getChild(cdlnk['cdprimit_childid'])
             current_into_cdmask = cdnp.node().getIntoCollideMask()
-            new_into_cdmask = current_into_cdmask & ~this_cdmask
+            new_into_cdmask = current_into_cdmask & ~this_cdmask_exclude_ext
             cdnp.node().setIntoCollideMask(new_into_cdmask)
         cdnp_to_delete.detachNode()
-        self.bitmask_list.append(this_cdmask)
+        self.bitmask_list.append(this_cdmask_exclude_ext)
 
     def is_collided(self, obstacle_list=[], otherrobot_list=[], toggle_contact_points=False):
         """
