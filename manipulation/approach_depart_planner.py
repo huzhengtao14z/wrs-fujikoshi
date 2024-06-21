@@ -215,7 +215,7 @@ class ADPlanner(object):  # AD = Approach_Depart
                                                             approach_distance,
                                                             approach_jawwidth,
                                                             granularity,
-                                                            obstacle_list,
+                                                            [],
                                                             seed_jnt_values,
                                                             toggle_end_grasp,
                                                             end_jawwidth)
@@ -252,7 +252,7 @@ class ADPlanner(object):  # AD = Approach_Depart
         if seed_jnt_values is None:
             seed_jnt_values = end_conf
         if depart_direction is None:
-            depart_direction = start_tcp_rotmat[:, 2]
+            depart_direction = -start_tcp_rotmat[:, 2]
         conf_list, jawwidth_list = self.gen_depart_linear(component_name,
                                                           start_tcp_pos,
                                                           start_tcp_rotmat,

@@ -6,7 +6,7 @@ import modeling.geometric_model as gm
 import modeling.collision_model as cm
 import grasping.planning.antipodal as gpa
 import robot_sim.end_effectors.gripper.dh60.dh60 as dh
-import robot_sim.robots.GOFA5.GOFA5 as gf5
+import robot_sim.robots.gofa5.gofa5 as gf5
 import manipulation.pick_place_planner as ppp
 import motion.probabilistic.rrt_connect as rrtc
 import basis.robot_math as rm
