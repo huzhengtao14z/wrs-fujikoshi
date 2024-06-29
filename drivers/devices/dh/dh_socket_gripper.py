@@ -1,4 +1,4 @@
-import dh_client_socket
+import drivers.devices.dh.dh_client_socket as dh_client_socket
 m_device = dh_client_socket.dh_client_socket()
 
 class dh_socket_gripper(object):

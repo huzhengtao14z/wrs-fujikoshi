@@ -1,4 +1,4 @@
-import dh_device
+import drivers.devices.dh.dh_device as dh_device
 m_device = dh_device.dh_device()
 
 

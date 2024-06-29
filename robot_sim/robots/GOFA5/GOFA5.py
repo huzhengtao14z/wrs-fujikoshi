@@ -176,6 +176,12 @@ class GOFA5(ri.RobotInterface):
         else:
             raise ValueError("The given component name is not supported!")
 
+    def get_jnt_init(self, component_name):
+        if component_name in self.manipulator_dict:
+            return self.arm.init_jnts
+        else:
+            raise ValueError("The given component name is not supported!")
+
     def rand_conf(self, component_name):
         if component_name in self.manipulator_dict:
             return super().rand_conf(component_name)

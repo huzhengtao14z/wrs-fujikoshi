@@ -1,5 +1,5 @@
-import dh_modbus_gripper
-import dh_socket_gripper
+import drivers.devices.dh.dh_modbus_gripper as dh_modbus_gripper
+import drivers.devices.dh.dh_socket_gripper as dh_socket_gripper
 from time import sleep
 
 
@@ -13,13 +13,21 @@ class Ag145driver():
         speed = 100
         self.m_gripper = dh_modbus_gripper.dh_modbus_gripper()
         self.m_gripper.open(port, baudrate)
-        self.init_gripper()
 
-        self.set_speed()
-        self.set_force()
+
+        self.m_gripper.Initialization()
+
+        # self.init_gripper()
+
+        # self.set_speed()
+        # self.set_force()
 
     def init_gripper(self):
         self.m_gripper.Initialization()
+        initstate = 0
+        while (initstate != 1):
+            initstate = self.m_gripper.GetInitState()
+            sleep(0.2)
         print('Send grip init')
 
     def set_force(self, force=100):
@@ -34,6 +42,10 @@ class Ag145driver():
 
     def jaw_to(self, jawwidth):
         self.m_gripper.SetTargetPosition(self.conv2encoder(jawwidth))
+        g_state = 0
+        while (g_state != 1):
+            g_state = self.m_gripper.GetInitState()
+            sleep(0.2)
 
     def open_g(self):
         self.jaw_to(0.145)

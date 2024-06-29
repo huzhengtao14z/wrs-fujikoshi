@@ -109,7 +109,6 @@ class GoFaArmController:
     def stop(self):
         self.rbtx.stop()
 
-
 if __name__ == "__main__":
     yumi_con = GoFaArmController()
     print(yumi_con.get_jnt_values())

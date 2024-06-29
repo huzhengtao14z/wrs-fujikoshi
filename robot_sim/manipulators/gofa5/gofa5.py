@@ -85,6 +85,7 @@ class GOFA5(mi.ManipulatorInterface):
         self.jlc.lnks[6]['rgba'] = [.7, .7, .7, 1]
         self.jlc.reinitialize()
 
+        self.init_jnts = np.array([0,0,0,0,0,0])
 
         # self.logo_02 = jl.JLChain(pos=self.jlc.jnts[4]['gl_posq'],
         #                           rotmat=self.jlc.jnts[4]['gl_rotmatq'],
