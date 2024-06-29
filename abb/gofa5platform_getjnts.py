@@ -80,32 +80,32 @@ if __name__ == '__main__':
     obgl_start_homomat = rm.homomat_from_posrot(start_pos, start_rotmat)
     obgl_goal_homomat = rm.homomat_from_posrot(goal_pos, goal_rotmat)
 
-    # conf_list, jawwidth_list, objpose_list = \
-    #     ppp_s.gen_pick_and_place_motion(hnd_name=hand_name,
-    #                                     objcm=obj,
-    #                                     grasp_info_list=grasp_info_list,
-    #                                     start_conf=start_conf,
-    #                                     end_conf=start_conf,
-    #                                     goal_homomat_list=[obgl_start_homomat, obgl_goal_homomat],
-    #                                     approach_direction_list=[None, np.array([0, 0, -1])],
-    #                                     approach_distance_list=[.1] * 2,
-    #                                     depart_direction_list=[np.array([0, 0, 1]), None],
-    #                                     depart_distance_list=[.1] * 2)
+    conf_list, jawwidth_list, objpose_list = \
+        ppp_s.gen_pick_and_place_motion(hnd_name=hand_name,
+                                        objcm=obj,
+                                        grasp_info_list=grasp_info_list,
+                                        start_conf=start_conf,
+                                        end_conf=start_conf,
+                                        goal_homomat_list=[obgl_start_homomat, obgl_goal_homomat],
+                                        approach_direction_list=[None, np.array([0, 0, -1])],
+                                        approach_distance_list=[.1] * 2,
+                                        depart_direction_list=[np.array([0, 0, 1]), None],
+                                        depart_distance_list=[.1] * 2)
 
     import pickle
-    # with open("test_conf_list", "wb") as f:
-    #     pickle.dump(conf_list, f)
-    # with open("test_jawwidth_path", "wb") as f:
-    #     pickle.dump(jawwidth_list, f)
-    # with open("test_objpose_list", "wb") as f:
-    #     pickle.dump(objpose_list, f)
+    with open("test_conf_list", "wb") as f:
+        pickle.dump(conf_list, f)
+    with open("test_jawwidth_path", "wb") as f:
+        pickle.dump(jawwidth_list, f)
+    with open("test_objpose_list", "wb") as f:
+        pickle.dump(objpose_list, f)
 
-    with open("test_conf_list", "rb") as f:
-        conf_list = pickle.load(f)
-    with open("test_jawwidth_path", "rb") as f:
-        jawwidth_list = pickle.load(f)
-    with open("test_objpose_list", "rb") as f:
-        objpose_list = pickle.load(f)
+    # with open("test_conf_list", "rb") as f:
+    #     conf_list = pickle.load(f)
+    # with open("test_jawwidth_path", "rb") as f:
+    #     jawwidth_list = pickle.load(f)
+    # with open("test_objpose_list", "rb") as f:
+    #     objpose_list = pickle.load(f)
 
 
     robot_paths = []
@@ -171,19 +171,16 @@ if __name__ == '__main__':
         objb_copy.set_homomat(obj_pose)
         objb_copy.attach_to(base)
         object_attached_list.append(objb_copy)
-        print("jnts = ,", rbt_r.get_jnt_values())
-        print("torque = ,", rbt_r.get_torques())
         counter[1] += 1
-
         # if counter[1]==len(robot_paths[counter[0]]):
         if base.inputmgr.keymap["space"] is True:
             if len(robot_paths[counter[0]])<=2:
                 gripper_r.jaw_to(jawwidth_paths[counter[0]][0]*0.25)
                 counter[0] += 1
                 counter[1] = 0
-
+                time.sleep(1)
             else:
-                rbt_r.move_jntspace_path(robot_paths[counter[0]], wait=False)
+                rbt_r.move_jntspace_path(robot_paths[counter[0]])
                 counter[0] += 1
                 counter[1] = 0
 

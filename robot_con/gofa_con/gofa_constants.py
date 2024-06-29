@@ -14,7 +14,7 @@ class GoFaConstants:
 
     PORTS = {
         "server": 5001,
-        "states": 5011,
+        "states": 5002,
         "poses": 5013,
         "torques": 5015
     }
@@ -51,11 +51,13 @@ class GoFaConstants:
         'set_tool': 6,
         'set_speed': 8,
         'set_zone': 9,
-        'get_torques': 10,
 
         'goto_pose_sync': 11,
         'goto_joints_sync': 12,
         'goto_pose_delta': 13,
+
+        'get_torques': 14,
+        'get_torques_current': 15,
 
         'close_gripper': 20,
         'open_gripper': 21,

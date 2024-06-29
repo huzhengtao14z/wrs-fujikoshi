@@ -8,6 +8,7 @@ import numpy as np
 from .gofa_arm import GoFaArm
 from .gofa_state import GoFaState
 from .piecewisepoly import PiecewisePoly
+from .gofa_constants import GoFaConstants as GFC
 
 
 class GoFaArmController:
@@ -15,14 +16,17 @@ class GoFaArmController:
     A client to control the yumi
     """
 
-    def __init__(self, toggle_debug=False):
-        self.rbtx = GoFaArm(debug=toggle_debug)
-        self._is_add_all = True
-        self._traj_opt = PiecewisePoly()
+    def __init__(self, toggle_debug=False, toggle_monitor_only=False):
+        self._toggle_monitor_only = toggle_monitor_only
+        if not toggle_monitor_only:
+            self.rbtx = GoFaArm(debug=toggle_debug)
+            self._is_add_all = True
+            self._traj_opt = PiecewisePoly()
+        self.sec_rbtx = GoFaArm(debug=toggle_debug, port=GFC.PORTS['states'])
 
     @property
     def arm(self):
-        return self.rbtx
+        return self.rbtx if not self._toggle_monitor_only else self.sec_rbtx
 
     def get_pose(self, component_name, return_conf=False):
         raise NotImplementedError
@@ -33,7 +37,7 @@ class GoFaArmController:
         :return: 1x6 array
         author: chen
         """
-        return np.deg2rad(self.rbtx.get_state().joints)
+        return np.deg2rad(self.sec_rbtx.get_state().joints)
 
     def get_torques(self) -> np.ndarray:
         """
@@ -43,7 +47,17 @@ class GoFaArmController:
         Notes: When the GoFa joints lock (idle), the torques are zeros.
         :return: joints
         """
-        return np.asarray(self.arm.get_torques())
+        return np.asarray(self.sec_rbtx.get_torques())
+
+    def get_torques_current(self) -> np.ndarray:
+        """
+        get the torques of joints
+        See 1: https://library.e.abb.com/public/b227fcd260204c4dbeb8a58f8002fe64/Rapid_instructions.pdf
+        See 2: https://forums.robotstudio.com/discussion/13247/motor-torque-using-getmotortorque-vs-getjointdata
+        Notes: When the GoFa joints lock (idle), the torques are zeros.
+        :return: joints
+        """
+        return np.asarray(self.sec_rbtx.get_torques_current())
 
     def move_j(self, jnt_vals: np.ndarray, speed_n=100, wait=True):
         """
@@ -60,6 +74,8 @@ class GoFaArmController:
         author: weiwei
         date: 20170411
         """
+        if self._toggle_monitor_only:
+            raise Exception("Toggle off monitor only to enable robot movements")
         assert len(jnt_vals) == GoFaState.NUM_JOINTS
         if speed_n == -1:
             self.arm.set_speed_max()
@@ -89,6 +105,8 @@ class GoFaArmController:
                 https://library.e.abb.com/public/688894b98123f87bc1257cc50044e809/Technical%20reference%20manual_RAPID_3HAC16581-1_revJ_en.pdf
 
         """
+        if self._toggle_monitor_only:
+            raise Exception("Toggle off monitor only to enable robot movements")
         statelist = []
         st = time.time()
         for armjnts in self._traj_opt.interpolate_path(path, num=min(100, int(len(path)))):
@@ -107,7 +125,10 @@ class GoFaArmController:
         return exec_result
 
     def stop(self):
-        self.rbtx.stop()
+        if not self._toggle_monitor_only:
+            self.rbtx.stop()
+        self.sec_rbtx.stop()
+
 
 if __name__ == "__main__":
     yumi_con = GoFaArmController()

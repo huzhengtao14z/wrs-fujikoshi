@@ -439,6 +439,39 @@ class GoFaArm:
             else:
                 return state
 
+    def get_torques_current(self, raw_res=False):
+        '''Get the torques (current) of joints.
+
+        Parameters
+        ----------
+        raw_res : bool, optional
+                If True, will return raw_res namedtuple instead of GoFaState
+                Defaults to False
+
+        Returns
+        -------
+        out :
+            GoFaState if raw_res is False
+
+            _RES(raw_res, state) namedtuple if raw_res is True
+
+        Raises
+        ------
+        GoFaCommException
+            If communication times out or socket error.
+        '''
+        if self._debug:
+            return GoFaState()
+
+        req = GoFaArm._construct_req('get_torques_current')
+        res = self._request(req, True)
+        if res is not None:
+            state = message_to_torques(res.message)
+            if raw_res:
+                return _RES(res, state)
+            else:
+                return state
+
     def get_pose(self, raw_res=False):
         '''Get the current pose of this arm to base frame of the arm.
 
@@ -587,7 +620,7 @@ class GoFaArm:
         return
 
     def _goto_state_sync(self, state, wait_for_res=True):
-        body = GoFaArm._iter_to_str('{:.2f}', state.jnts)
+        body = GoFaArm._iter_to_str('{:.2f}', state.joints)
         req = GoFaArm._construct_req('goto_joints_sync', body)
         return self._request(req, wait_for_res, timeout=self._motion_timeout)
 
@@ -1107,7 +1140,10 @@ class GoFaArm:
         '''
         req = GoFaArm._construct_req('buffer_j_move')
         res = self._request(req, wait_for_res, timeout=self._motion_timeout)
-        return bool(int(res.message))
+        if res is not None:
+            return bool(int(res.message))
+        else:
+            return None
 
     def write_handcamimg_ftp(self):
         """
