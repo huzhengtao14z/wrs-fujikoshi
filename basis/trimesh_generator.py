@@ -20,6 +20,15 @@ def gen_box(extent=np.array([1, 1, 1]), homomat=np.eye(4)):
     """
     return tp.Box(box_extents=extent, box_transform=homomat)
 
+def gen_cylinder(radius=0.01, height = 0.1, section = 100, homomat = np.eye(4)):
+    """
+    :param extent: x, y, z (origin is 0)
+    :param homomat: rotation and translation
+    :return: a Trimesh object (Primitive)
+    author: hu
+    date: 20220113osaka
+    """
+    return tp.Cylinder(radius=radius, height =height, sections = section, homomat=homomat)
 
 def gen_stick(spos=np.array([0, 0, 0]), epos=np.array([0.1, 0, 0]), thickness=0.005, type="rect", sections=8):
     """
@@ -59,7 +68,7 @@ def gen_rectstick(spos=np.array([0, 0, 0]), epos=np.array([0.1, 0, 0]), thicknes
     return tp.Cylinder(height=height, radius=thickness / 2.0, sections=sections, homomat=homomat)
 
 
-def gen_roundstick(spos=np.array([0, 0, 0]), epos=np.array([0.1, 0, 0]), thickness=0.005, count=[8, 8]):
+def gen_roundstick(spos=np.array([0, 0, 0]), epos=np.array([0.1, 0, 0]), radius = 0.005, count=[8, 8]):
     """
     :param spos:
     :param epos:
@@ -75,8 +84,56 @@ def gen_roundstick(spos=np.array([0, 0, 0]), epos=np.array([0.1, 0, 0]), thickne
     else:
         rotmat = rm.rotmat_between_vectors(np.array([0, 0, 1]), epos - spos)
     homomat = rm.homomat_from_posrot(pos, rotmat)
-    return tp.Capsule(height=height, radius=thickness / 2.0, count=count, homomat=homomat)
+    return tp.Capsule(height=height, radius=radius, count=count, homomat=homomat)
 
+def gen_capsule(spos=np.array([0, 0, 0]), epos=np.array([0.1, 0, 0]), radius=0.005, count=[8, 8]):
+    """
+    :param spos:
+    :param epos:
+    :param thickness:
+    :return: a Trimesh object (Primitive)
+    author: weiwei
+    date: 20191228osaka
+    """
+    pos = spos
+    height = np.linalg.norm(epos - spos)
+    if np.allclose(height, 0):
+        rotmat = np.eye(3)
+    else:
+        rotmat = rm.rotmat_between_vectors(np.array([0, 0, 1]), epos - spos)
+    homomat = rm.homomat_from_posrot(pos, rotmat)
+    return tp.Capsule(height=height, radius=radius, count=count, homomat=homomat)
+
+def gen_section(spos=np.array([0, 0, 0]), epos=np.array([0.1, 0, 0]), height_vec =np.array([0, 0, 1]), height = 0.01, angle=30, section=8):
+    """
+    :param spos:
+    :param epos:
+    :param thickness:
+    :return: a Trimesh object (Primitive)
+    author: hu
+    date: 20240617
+    """
+    pos = spos
+    direction = rm.unit_vector(epos - spos)
+    length = np.linalg.norm(epos - spos)
+    height = height
+    if np.allclose(height, 0):
+        rotmat_goal = np.eye(3)
+    else:
+        rotmat_goal = rm.rotmat_from_two_axis(direction, rm.unit_vector(height_vec), "xz")
+    rotmat = rotmat_goal
+    homomat = rm.homomat_from_posrot(pos, rotmat)
+    center_offset = - (rotmat[:,2]*height/2)
+    center_offset_homo = rm.homomat_from_posrot(center_offset, np.eye(3))
+    homomat = center_offset_homo.dot(homomat)
+    angle_rad = np.deg2rad(angle)
+    direction_boundary = np.dot(rm.rotmat_from_axangle(np.array([0, 0, 1]),-angle_rad/2), [1,0,0])
+    curve_pnts = [(np.array([0,0,0]) + np.dot(rm.rotmat_from_axangle(np.array([0, 0, 1]),i*angle_rad/section),direction_boundary)*length)[:2] for i in range(section+1)]
+    curve_pnts.append(np.array([0,0]))
+    extrude_polygon = shpg.Polygon(curve_pnts)
+    extrude_transform = homomat
+    extrude_height = height
+    return tp.Extrusion(extrude_polygon = extrude_polygon, extrude_transform = extrude_transform, extrude_height = extrude_height)
 
 def gen_dashstick(spos=np.array([0, 0, 0]), epos=np.array([0.1, 0, 0]), thickness=0.005, lsolid=None, lspace=None,
                   sections=8, sticktype="rect"):
@@ -206,17 +263,12 @@ def gen_arrow(spos=np.array([0, 0, 0]), epos=np.array([0.1, 0, 0]), thickness=0.
     date: 20191228osaka
     """
     direction = rm.unit_vector(epos - spos)
-    if np.linalg.norm(spos-epos) > thickness * 4:
-        stick = gen_stick(spos=spos, epos=epos - direction * thickness * 4, thickness=thickness, type=sticktype,
-                          sections=sections)
-        cap = gen_cone(spos=epos - direction * thickness * 4, epos=epos, radius=thickness, sections=sections)
-        vertices = np.vstack((stick.vertices, cap.vertices))
-        capfaces = cap.faces + len(stick.vertices)
-        faces = np.vstack((stick.faces, capfaces))
-    else:
-        cap = gen_cone(spos=epos - direction * thickness * 4, epos=epos, radius=thickness, sections=sections)
-        vertices = cap.vertices
-        faces = cap.faces
+    stick = gen_stick(spos=spos, epos=epos - direction * thickness * 4, thickness=thickness, type=sticktype,
+                      sections=sections)
+    cap = gen_cone(spos=epos - direction * thickness * 4, epos=epos, radius=thickness, sections=sections)
+    vertices = np.vstack((stick.vertices, cap.vertices))
+    capfaces = cap.faces + len(stick.vertices)
+    faces = np.vstack((stick.faces, capfaces))
     return trm.Trimesh(vertices=vertices, faces=faces)
 
 
@@ -332,6 +384,37 @@ def gen_torus(axis=np.array([1, 0, 0]),
     else:
         return trm.Trimesh()
 
+def gen_curveline(pseq, rotseq, r, section=5, toggledebug=False):
+    vertices = []
+    faces = []
+    for i, p in enumerate(pseq):
+        for a in np.linspace(-np.pi, np.pi, section + 1):
+            vertices.append(p + rotseq[i][:, 0] * r * np.sin(a)
+                            + rotseq[i][:, 2] * r * np.cos(a))
+    vertices.append(pseq[0])
+    vertices.append(pseq[-1])
+    for i in range((section + 1) * (len(pseq) - 1)):
+        if i % (section + 1) == 0:
+            for v in range(i, i + section):
+                faces.extend([[v, v + section + 1, v + section + 2],
+                              [v, v + section + 2, v + 1]])
+    for i in range(0, section):
+        faces.extend([[i,len(vertices)-2, i+1]])
+    for i in range(len(vertices)-section-3, len(vertices)-3):
+        faces.extend([[i, len(vertices) - 1, i + 1]])
+
+    if toggledebug:
+        # show_pseq(pseq, rgba=[1, 0, 0, 1], radius=0.0002)
+        # show_pseq(vertices, rgba=[1, 1, 0, 1], radius=0.0002)
+        tmp_trm = trm.Trimesh(vertices=np.asarray(vertices), faces=np.asarray(faces))
+        tmp_cm = gm.GeometricModel(initor=tmp_trm, btwosided=True)
+        tmp_cm.set_rgba((.7, .7, 0, .7))
+        tmp_cm.attach_to(base)
+
+
+    objtrm = trm.Trimesh(vertices=np.asarray(vertices), faces=np.asarray(faces))
+    objtrm.fix_normals()
+    return objtrm
 
 def gen_dashtorus(axis=np.array([1, 0, 0]),
                   portion=.5,
@@ -390,8 +473,7 @@ def gen_circarrow(axis=np.array([1, 0, 0]),
                   radius=0.005,
                   thickness=0.0015,
                   sections=8,
-                  discretization=24,
-                  end='single'):
+                  discretization=24):
     """
     :param axis: the circ arrow will rotate around this axis 1x3 nparray
     :param portion: 0.0~1.0
@@ -400,7 +482,6 @@ def gen_circarrow(axis=np.array([1, 0, 0]),
     :param thickness:
     :param rgba:
     :param discretization: number sticks used for approximation
-    :param end: 'single' or 'double'
     :return:
     author: weiwei
     date: 20200602
@@ -416,26 +497,14 @@ def gen_circarrow(axis=np.array([1, 0, 0]),
     # gen the last arrow first
     # gen the remaining torus
     if ndist > 0:
-        arrow_ticks = int(thickness*4/(discretizedangle*radius))
-        lastpos = center + np.dot(rm.rotmat_from_axangle(unitaxis, (ndist - arrow_ticks) * discretizedangle),
+        lastpos = center + np.dot(rm.rotmat_from_axangle(unitaxis, (ndist - 1) * discretizedangle),
                                   starting_vector) * radius
         nxtpos = center + np.dot(rm.rotmat_from_axangle(unitaxis, ndist * discretizedangle), starting_vector) * radius
         arrow = gen_arrow(spos=lastpos, epos=nxtpos, thickness=thickness, sections=sections, sticktype="round")
         vertices = arrow.vertices
         faces = arrow.faces
-        if end=='single':
-            idstart = 1
-            lastpos = starting_pos
-        elif end=='double':
-            idstart = arrow_ticks
-            lastpos = center + np.dot(rm.rotmat_from_axangle(unitaxis, (arrow_ticks) * discretizedangle),
-                                      starting_vector) * radius
-            nxtpos = starting_pos
-            arrow = gen_arrow(spos=lastpos, epos=nxtpos, thickness=thickness, sections=sections, sticktype="round")
-            arrowfaces = arrow.faces + len(vertices)
-            vertices = np.vstack((vertices, arrow.vertices))
-            faces = np.vstack((faces, arrowfaces))
-        for i in range(idstart, ndist-arrow_ticks+1, 1):
+        lastpos = starting_pos
+        for i in range(1 * np.sign(ndist), ndist, 1 * np.sign(ndist)):
             nxtpos = center + np.dot(rm.rotmat_from_axangle(unitaxis, i * discretizedangle), starting_vector) * radius
             stick = gen_stick(spos=lastpos, epos=nxtpos, thickness=thickness, sections=sections, type="round")
             stickfaces = stick.faces + len(vertices)
@@ -582,6 +651,13 @@ if __name__ == "__main__":
         gen_dumbbell()
     toc = time.time()
     print("mine", toc - tic)
+    gm.gen_frame().attach_to(base)
+    gm.gen_sphere([0.1, 0, 0]).attach_to(base)
+    gm.gen_section(spos=np.array([-0.1, 0, 0.1]),
+             epos=np.array([-0.2, 0, 0.2]),
+             rgba=np.array([.7, .7, .7, .3]),
+             height_vec =np.array([1, 0, 1]), height = 0.01, angle=30, section=8).attach_to(base)
+    base.run()
     objcm = gm.GeometricModel(gen_dashstick(lsolid=.005, lspace=.005))
     objcm = gm.GeometricModel(gen_dashtorus(portion=1))
     objcm.set_rgba([1, 0, 0, 1])

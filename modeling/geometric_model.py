@@ -151,6 +151,8 @@ class StaticGeometricModel(object):
             self._objpdnp.reparentTo(obj.objpdnp)
         elif isinstance(obj, mc.ModelCollection):
             obj.add_gm(self)
+        elif isinstance(obj, NodePath):
+            self._objpdnp.reparentTo(obj)
         else:
             print(
                 "Must be ShowBase, modeling.StaticGeometricModel, GeometricModel, CollisionModel, or CollisionModelCollection!")
@@ -426,7 +428,7 @@ def gen_linesegs(linesegs, thickness=0.001, rgba=[0, 0, 0, 1]):
 #     return ls_sgm
 
 
-def gen_sphere(pos=np.array([0, 0, 0]), radius=0.01, rgba=[1, 0, 0, 1], subdivisions=2):
+def gen_sphere(pos=np.array([0, 0, 0]), radius=0.01, rgba=[1, 0, 0, 1], subdivisions=3):
     """
     :param pos:
     :param radius:
@@ -507,7 +509,7 @@ def gen_dashstick(spos=np.array([0, 0, 0]),
     return dashstick_sgm
 
 
-def gen_box(extent=np.array([1, 1, 1]),
+def gen_box(extent=np.array([.1, .1, .1]),
             homomat=np.eye(4),
             rgba=[1, 0, 0, 1]):
     """
@@ -521,6 +523,34 @@ def gen_box(extent=np.array([1, 1, 1]),
     box_sgm = StaticGeometricModel(box_trm)
     box_sgm.set_rgba(rgba=rgba)
     return box_sgm
+
+def gen_cylinder(radius=0.1, height= 0.2, section = 100, homomat= np.eye(4), rgba = (1,1,0,1)):
+    """
+    :param extent:
+    :param homomat:
+    :return:
+    author: hu
+    date: 20220113
+    """
+    cld_trm = trihelper.gen_cylinder(radius=radius, height= height, section = section, homomat= homomat)
+    cld_sgm = StaticGeometricModel(cld_trm)
+    cld_sgm = GeometricModel(cld_trm)
+    cld_sgm.set_rgba(rgba=rgba)
+    return cld_sgm
+
+def gen_capsule(spos=(0,0,0), epos= (0,0,0.01), section = [100, 100], radius=0.005, rgba = (1,1,0,1)):
+    """
+    :param extent:
+    :param homomat:
+    :return:
+    author: hu
+    date: 20220113
+    """
+    cld_trm = trihelper.gen_roundstick(spos=spos, epos=epos, radius = radius, count=section)
+    # cld_trm = trihelper.gen_capsule(spos=spos, epos= epos, section = section, homomat= homomat)
+    cld_sgm = StaticGeometricModel(cld_trm)
+    cld_sgm.set_rgba(rgba=rgba)
+    return cld_sgm
 
 
 def gen_dumbbell(spos=np.array([0, 0, 0]),
@@ -560,6 +590,27 @@ def gen_cone(spos=np.array([0, 0, 0]),
     cone_sgm = GeometricModel(cone_trm)
     cone_sgm.set_rgba(rgba=rgba)
     return cone_sgm
+
+def gen_section(spos=np.array([0, 0, 0]),
+             epos=np.array([0.1, 0, 0]),
+             rgba=np.array([.7, .7, .7, .3]),
+             height_vec =np.array([0, 0, 1]), height = 0.01, angle=30, section=8):
+    """
+    :param spos:
+    :param epos:
+    :param radius:
+    :param sections:
+    :return:
+    author: hu
+    date: 20240611
+    """
+    height_vec = rm.unit_vector(height_vec)
+    # print(height_vec)
+    section_trm = trihelper.gen_section(spos=spos, epos=epos, height_vec =height_vec, height = height, angle=angle, section=section)
+    # print(section_trm.faces)
+    section_sgm = GeometricModel(section_trm)
+    section_sgm.set_rgba(rgba=rgba)
+    return section_sgm
 
 def gen_arrow(spos=np.array([0, 0, 0]),
               epos=np.array([.1, 0, 0]),
@@ -769,6 +820,79 @@ def gen_torus(axis=np.array([1, 0, 0]),
     torus_sgm.set_rgba(rgba=rgba)
     return torus_sgm
 
+def gen_curveline(pseq, r, section=5,  toggledebug=False):
+    def get_rotseq_by_pseq(pseq):
+        rotseq = []
+        pre_n = None
+        for i in range(1, len(pseq) - 1):
+            v1 = pseq[i - 1] - pseq[i]
+            v2 = pseq[i] - pseq[i + 1]
+            n = np.cross(rm.unit_vector(v1), rm.unit_vector(v2))
+            if pre_n is not None:
+                if rm.angle_between_vectors(n, pre_n) > np.pi / 2:
+                    n = -n
+            x = np.cross(v1, n)
+            rot = np.asarray([rm.unit_vector(x), rm.unit_vector(v1), rm.unit_vector(n)]).T
+            rotseq.append(rot)
+            pre_n = n
+        rotseq = [rotseq[0]] + rotseq + [rotseq[-1]]
+        return rotseq
+
+    rotseq = get_rotseq_by_pseq(pseq)
+    # gen_sphere(pseq[0], radius=0.0002, rgba=[0, 1, 0, 1]).attach_to(base)
+    return GeometricModel(trihelper.gen_curveline(pseq, rotseq, r, section, toggledebug))
+
+def gen_ellipse(center, points, r, section, toggledebug=False):
+    a = np.linalg.norm(points[0]-center)
+    b = np.linalg.norm(points[1]-center)
+    import hu.humath as hm
+    surface = hm.getsurfacefrom3pnt(points[:3])
+    normal = np.asarray(surface[:3])
+    rotmat = rm.rotmat_between_vectors(np.array([0,0,1]), normal)
+    pos = center
+    homomat = rm.homomat_from_posrot(pos, rotmat)
+    def ellipse_curve(a = 0.01, b=0.02, homomat = np.eye(4)):
+        disc = 50
+        theta_list = np.linspace(0,2*np.pi*(disc+1)/disc,disc+1)
+        xy_list = []
+        for theta in theta_list:
+            r = (a*b)/(np.sqrt((b*b*np.cos(theta)*np.cos(theta))+(a*a*np.sin(theta)*np.sin(theta))))
+            coordinat = rm.homomat_transform_points(homomat,np.array([r*np.cos(theta),r*np.sin(theta),0]))
+            xy_list.append(coordinat)
+        return xy_list
+    curve = ellipse_curve(a, b, homomat)
+
+    return gen_curveline(curve, r, section=section, toggledebug=False)
+
+def gen_halfellipse(points, r, section, toggledebug=False):
+    center = 0.5*(points[0]+points[2])
+
+    a = np.linalg.norm(points[0]-center)
+    b = np.linalg.norm(points[1]-center)
+    import hu.humath as hm
+    surface = hm.getsurfacefrom3pnt(points[:3])
+    normal = np.asarray(surface[:3])
+    a_unit = rm.unit_vector(points[0]-center)
+    b_unit = rm.unit_vector(points[1] - center)
+    rotmat = np.array([[a_unit[0],b_unit[0],normal[0]],
+              [a_unit[1],b_unit[1],normal[1]],
+              [a_unit[2],b_unit[2],normal[2]]])
+    # rotmat = rm.rotmat_between_vectors(np.array([0,0,1]), normal)
+    pos = center
+    # pos = 0.5*(points[0]-points[2])
+    homomat = rm.homomat_from_posrot(pos, rotmat)
+    def ellipse_curve(a = 0.01, b=0.02, homomat = np.eye(4)):
+        disc = 50
+        theta_list = np.linspace(0,1*np.pi*(disc+1)/disc,disc+1)
+        xy_list = []
+        for theta in theta_list:
+            r = (a*b)/(np.sqrt((b*b*np.cos(theta)*np.cos(theta))+(a*a*np.sin(theta)*np.sin(theta))))
+            coordinat = rm.homomat_transform_points(homomat,np.array([r*np.cos(theta),r*np.sin(theta),0]))
+            xy_list.append(coordinat)
+        return xy_list
+    curve = ellipse_curve(a, b, homomat)
+
+    return gen_curveline(curve, r, section=section, toggledebug=False)
 
 def gen_dashtorus(axis=np.array([1, 0, 0]),
                   portion=.5,
@@ -810,13 +934,11 @@ def gen_circarrow(axis=np.array([1, 0, 0]),
                   thickness=.005,
                   rgba=[1, 0, 0, 1],
                   sections=8,
-                  discretization=24,
-                  end='single'):
+                  discretization=24):
     """
     :param axis: the circ arrow will rotate around this axis 1x3 nparray
     :param portion: 0.0~1.0
     :param center: the center position of the circ 1x3 nparray
-    :param end: 'single' or 'double'
     :return:
     author: weiwei
     date: 20200602
@@ -828,11 +950,11 @@ def gen_circarrow(axis=np.array([1, 0, 0]),
                                             radius=radius,
                                             thickness=thickness,
                                             sections=sections,
-                                            discretization=discretization,
-                                            end=end)
+                                            discretization=discretization)
     circarrow_sgm = StaticGeometricModel(circarrow_trm)
     circarrow_sgm.set_rgba(rgba=rgba)
     return circarrow_sgm
+
 
 def gen_pointcloud(points, rgbas=[[0, 0, 0, .7]], pntsize=3):
     """
@@ -847,6 +969,8 @@ def gen_pointcloud(points, rgbas=[[0, 0, 0, .7]], pntsize=3):
     pointcloud_nodepath.setRenderMode(RenderModeAttrib.MPoint, pntsize)
     pointcloud_sgm = StaticGeometricModel(pointcloud_nodepath)
     return pointcloud_sgm
+
+
 
 
 def gen_submesh(verts, faces, rgba=[1, 0, 0, 1]):
@@ -950,6 +1074,7 @@ def gen_surface(surface_callback, rng, granularity=.01):
     surface_trm = trihelper.gen_surface(surface_callback, rng, granularity)
     surface_gm = GeometricModel(surface_trm, btwosided=True)
     return surface_gm
+
 
 
 if __name__ == "__main__":
