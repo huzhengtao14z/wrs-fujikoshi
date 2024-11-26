@@ -53,7 +53,7 @@ class StaticGeometricModel(object):
                 self._objpath = None
                 if initor.shape[1] == 3:
                     self._objtrm = da.trm.Trimesh(initor)
-                    objpdnp_raw = da.nodepath_from_points(self._objtrm.vertices)
+                    objpdnp_raw = da.nodepath_from_points(self._objtrm.vertices, np.array([1,0,0,1]))
                 elif initor.shape[1] == 7:
                     self._objtrm = da.trm.Trimesh(initor[:, :3])
                     objpdnp_raw = da.nodepath_from_points(self._objtrm.vertices, initor[:, 3:].tolist())

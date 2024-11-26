@@ -329,6 +329,10 @@ class CollisionModel(gm.GeometricModel):
     def copy(self):
         return CollisionModel(self)
 
+    def get_com(self):
+        com = self._objtrm.center_mass
+        return com
+
     def __deepcopy__(self, memodict={}):
         """
         override __deepcopy__ to bypass the ode deprecated function problem

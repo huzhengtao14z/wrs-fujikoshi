@@ -7,9 +7,9 @@ import visualization.panda.world as wd
 import modeling.geometric_model as gm
 import modeling.collision_model as cm
 import grasping.planning.antipodal as gpa
-import robot_sim.end_effectors.gripper.dh60.dh60 as dh
+# import robot_sim.end_effectors.gripper.dh60.dh60 as dh
 import robot_sim.end_effectors.gripper.ag145.ag145 as dh
-import robot_sim.robots.gofa5.gofa5 as gf5
+import robot_sim.robots.GOFA5.GOFA5 as gf5
 import manipulation.pick_place_planner as ppp
 import motion.probabilistic.rrt_connect as rrtc
 import basis.robot_math as rm
@@ -38,11 +38,8 @@ if __name__ == '__main__':
     # gripper_r.jaw_to(0.0)
     # gripper_r.jaw_to(0.1)
     # base.run()
-    print("3")
     rbt_s = gf5.GOFA5()
-    print("2")
     rbt_r = gofa_con.GoFaArmController()
-    print("1")
     rrtc_s = rrtc.RRTConnect(rbt_s)
     ppp_s = ppp.PickPlacePlanner(rbt_s)
     manipulator_name = "arm"
