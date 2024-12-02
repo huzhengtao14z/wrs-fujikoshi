@@ -4,7 +4,7 @@ Author: Hao Chen (chen960216@gmail.com)
 """
 if __name__ == "__main__":
     import math
-    from gofa_con import GoFaArmController
+    from robot_con.gofa_con import GoFaArmController
     paths = []
     # initialize the GoFaArm Controller
     arm = GoFaArmController(toggle_debug=False)

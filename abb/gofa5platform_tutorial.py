@@ -13,7 +13,8 @@ import robot_sim.robots.gofa5.gofa5 as gf5
 import manipulation.pick_place_planner as ppp
 import motion.probabilistic.rrt_connect as rrtc
 import basis.robot_math as rm
-# import robot_con.gofa_con.gofa_con as gofa_con
+import robot_con.gofa_con.gofa_con as gofa_con
+import motion.probabilistic.rrt_connect as rrtc
 
 
 # def go_init():
@@ -33,10 +34,36 @@ if __name__ == '__main__':
     gm.gen_frame().attach_to(base)
 
     rbt_s = gf5.GOFA5()
-    # rbt_r = gofa_con.GoFaArmController()
-    start_conf = np.array([0.0439823, -0.53023103, 1.05243354, 0.0143117, 1.55351757, 1.57079633])
-    # rbt_r.move_j(start_conf)
-    # base.run()
+    rbt_r = gofa_con.GoFaArmController()
+    # start_conf = np.array([0.0439823, -0.53023103, 1.05243354, 0.0143117, 1.55351757, 1.57079633])
+
+
+
+    start_conf = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    rbt_s.fk("arm", start_conf)
+    # rbt_s.fk("arm",np.asarray(rbt_r.get_jnt_values()))
+    rbt_s.gen_meshmodel().attach_to(base)
+
+    rbt_r.move_j(start_conf)
+    base.run()
+    start_pos, start_rot = rbt_s.get_gl_tcp("arm")
+    goal_pos = start_pos + [0.08, 0, 0]
+    goal_rot = start_rot
+    goal_jnts = rbt_s.ik("arm", goal_pos, goal_rot)
+
+    # rbt_r.move_j(goal_jnts)
+
+    rrtc_planner = rrtc.RRTConnect(rbt_s)
+    path = rrtc_planner.plan(component_name="arm",
+                             start_conf=start_conf,
+                             goal_conf=goal_jnts,
+                             ext_dist=0.03,
+                             max_time=300)
+    for item in path:
+        rbt_s.fk("arm", item)
+        rbt_s.gen_meshmodel().attach_to(base)
+    rbt_r.move_jntspace_path(path)
+    base.run()
     # print(rbt_r.get_jnt_values())
     # rbt_s.fk("arm",np.asarray(rbt_r.get_jnt_values()))
     # rbt_s.gen_meshmodel().attach_to(base)
