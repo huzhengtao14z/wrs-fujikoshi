@@ -25,58 +25,61 @@ class Ag145(gp.GripperInterface):
         self.lft_outer = jl.JLChain(pos=cpl_end_pos, rotmat=cpl_end_rotmat, homeconf=np.zeros(3), name='lft_outer')
         self.lft_outer.jnts[0]['loc_pos'] = np.array([0, -.0, .0])
         self.lft_outer.jnts[0]['loc_rotmat'] = rm.rotmat_from_euler(0, 0, 0)
-        self.lft_outer.jnts[1]['loc_pos'] = np.array([0, -.03675, .09334])
-        self.lft_outer.jnts[1]['motion_rng'] = [0, 54.04/180*math.pi]
-        self.lft_outer.jnts[1]['loc_rotmat'] = rm.rotmat_from_euler(49.73/180*math.pi+math.pi/2, 0, 0)
+        self.lft_outer.jnts[1]['loc_pos'] = np.array([0, -.03675, .09884])
+        self.lft_outer.jnts[1]['motion_rng'] = [0, 54.04 / 180 * math.pi]
+        self.lft_outer.jnts[1]['loc_rotmat'] = rm.rotmat_from_euler(49.73 / 180 * math.pi + math.pi / 2, 0, 0)
         self.lft_outer.jnts[1]['loc_motionax'] = np.array([-1, 0, 0])
         self.lft_outer.jnts[2]['loc_pos'] = np.array([0, 0.0865, 0])  # passive
         self.lft_outer.jnts[2]['loc_motionax'] = np.array([-1, 0, 0])
-        self.lft_outer.jnts[2]['loc_rotmat'] = rm.rotmat_from_euler(-49.73/180*math.pi, 0, 0)
+        self.lft_outer.jnts[2]['loc_rotmat'] = rm.rotmat_from_euler(-49.73 / 180 * math.pi, 0, 0)
         self.lft_outer.jnts[3]['loc_pos'] = np.array([0, 0.02752444, -0.03017323])
-        self.lft_outer.jnts[3]['loc_rotmat'] = rm.rotmat_from_euler(0 ,0, 0)
+        self.lft_outer.jnts[3]['loc_rotmat'] = rm.rotmat_from_euler(0, 0, 0)
         self.lft_outer.jnts[3]['loc_motionax'] = np.array([-1, 0, 0])
         # - lft_inner
         self.lft_inner = jl.JLChain(pos=cpl_end_pos, rotmat=cpl_end_rotmat, homeconf=np.zeros(1), name='lft_inner')
-        self.lft_inner.jnts[1]['loc_pos'] = np.array([0, -.016, .10086])
-        self.lft_inner.jnts[1]['loc_rotmat'] = rm.rotmat_from_euler(49.73/180*math.pi+math.pi/2, 0, 0)
+        self.lft_inner.jnts[1]['loc_pos'] = np.array([0, -.016, .10636])
+        self.lft_inner.jnts[1]['loc_rotmat'] = rm.rotmat_from_euler(49.73 / 180 * math.pi + math.pi / 2, 0, 0)
         self.lft_inner.jnts[1]['loc_motionax'] = np.array([-1, 0, 0])
         # - lft_inner_connectingrod
-        self.lft_inner_connectingrod = jl.JLChain(pos=cpl_end_pos, rotmat=cpl_end_rotmat, homeconf=np.zeros(3), name='lft_inner_connectingrod')
-        self.lft_inner_connectingrod.jnts[1]['loc_pos'] = np.array([0, -.016, .10086])
-        self.lft_inner_connectingrod.jnts[1]['loc_rotmat'] = rm.rotmat_from_euler(math.pi+38.21/180*math.pi,0,0)
-        self.lft_inner_connectingrod.jnts[1]['loc_motionax'] = np.array([-1,0,0])
+        self.lft_inner_connectingrod = jl.JLChain(pos=cpl_end_pos, rotmat=cpl_end_rotmat, homeconf=np.zeros(3),
+                                                  name='lft_inner_connectingrod')
+        self.lft_inner_connectingrod.jnts[1]['loc_pos'] = np.array([0, -.016, .10636])
+        self.lft_inner_connectingrod.jnts[1]['loc_rotmat'] = rm.rotmat_from_euler(math.pi + 38.21 / 180 * math.pi, 0, 0)
+        self.lft_inner_connectingrod.jnts[1]['loc_motionax'] = np.array([-1, 0, 0])
         self.lft_inner_connectingrod.jnts[2]['loc_pos'] = np.array([0, .037, 0])
-        self.lft_inner_connectingrod.jnts[2]['loc_rotmat'] = rm.rotmat_from_euler(-95.377/180*math.pi, 0, 0)
+        self.lft_inner_connectingrod.jnts[2]['loc_rotmat'] = rm.rotmat_from_euler(-95.377 / 180 * math.pi, 0, 0)
         self.lft_inner_connectingrod.jnts[2]['loc_motionax'] = np.array([-1, 0, 0])
         self.lft_inner_connectingrod.jnts[3]['loc_pos'] = np.array([0, .0, 0])
-        self.lft_inner_connectingrod.jnts[3]['loc_rotmat'] = rm.rotmat_from_euler(-174.62/180*math.pi, 0, 0)
+        self.lft_inner_connectingrod.jnts[3]['loc_rotmat'] = rm.rotmat_from_euler(-174.62 / 180 * math.pi, 0, 0)
         self.lft_inner_connectingrod.jnts[3]['loc_motionax'] = np.array([-1, 0, 0])
         # - rgt_outer
         self.rgt_outer = jl.JLChain(pos=cpl_end_pos, rotmat=cpl_end_rotmat, homeconf=np.zeros(3), name='rgt_outer')
-        self.rgt_outer.jnts[1]['loc_pos'] = np.array([0, .03675, .09334])
-        self.rgt_outer.jnts[1]['loc_rotmat'] = rm.rotmat_from_euler(49.73/180*math.pi+math.pi/2, 0, math.pi)
+        self.rgt_outer.jnts[1]['loc_pos'] = np.array([0, .03675, .09884])
+        self.rgt_outer.jnts[1]['loc_rotmat'] = rm.rotmat_from_euler(49.73 / 180 * math.pi + math.pi / 2, 0, math.pi)
         self.rgt_outer.jnts[1]['loc_motionax'] = np.array([-1, 0, 0])
         self.rgt_outer.jnts[2]['loc_pos'] = np.array([0, 0.0865, 0])  # passive
         self.rgt_outer.jnts[2]['loc_motionax'] = np.array([-1, 0, 0])
-        self.rgt_outer.jnts[2]['loc_rotmat'] = rm.rotmat_from_euler(-49.73/180*math.pi, 0, 0)
+        self.rgt_outer.jnts[2]['loc_rotmat'] = rm.rotmat_from_euler(-49.73 / 180 * math.pi, 0, 0)
         self.rgt_outer.jnts[3]['loc_pos'] = np.array([0, 0.02752444, -0.03017323])
-        self.rgt_outer.jnts[3]['loc_rotmat'] = rm.rotmat_from_euler(0 ,0, 0)
+        self.rgt_outer.jnts[3]['loc_rotmat'] = rm.rotmat_from_euler(0, 0, 0)
         self.rgt_outer.jnts[3]['loc_motionax'] = np.array([-1, 0, 0])
         # - rgt_inner
         self.rgt_inner = jl.JLChain(pos=cpl_end_pos, rotmat=cpl_end_rotmat, homeconf=np.zeros(1), name='rgt_inner')
-        self.rgt_inner.jnts[1]['loc_pos'] = np.array([0, .016, .10086])
-        self.rgt_inner.jnts[1]['loc_rotmat'] = rm.rotmat_from_euler(49.73/180*math.pi+math.pi/2, 0, math.pi)
+        self.rgt_inner.jnts[1]['loc_pos'] = np.array([0, .016, .10636])
+        self.rgt_inner.jnts[1]['loc_rotmat'] = rm.rotmat_from_euler(49.73 / 180 * math.pi + math.pi / 2, 0, math.pi)
         self.rgt_inner.jnts[1]['loc_motionax'] = np.array([-1, 0, 0])
         # - rgt_inner_connectingrod
-        self.rgt_inner_connectingrod = jl.JLChain(pos=cpl_end_pos, rotmat=cpl_end_rotmat, homeconf=np.zeros(3), name='rgt_inner_connectingrod')
-        self.rgt_inner_connectingrod.jnts[1]['loc_pos'] = np.array([0, .016, .10086])
-        self.rgt_inner_connectingrod.jnts[1]['loc_rotmat'] = rm.rotmat_from_euler(math.pi+38.21/180*math.pi,0,math.pi)
-        self.rgt_inner_connectingrod.jnts[1]['loc_motionax'] = np.array([-1,0,0])
+        self.rgt_inner_connectingrod = jl.JLChain(pos=cpl_end_pos, rotmat=cpl_end_rotmat, homeconf=np.zeros(3),
+                                                  name='rgt_inner_connectingrod')
+        self.rgt_inner_connectingrod.jnts[1]['loc_pos'] = np.array([0, .016, .10636])
+        self.rgt_inner_connectingrod.jnts[1]['loc_rotmat'] = rm.rotmat_from_euler(math.pi + 38.21 / 180 * math.pi, 0,
+                                                                                  math.pi)
+        self.rgt_inner_connectingrod.jnts[1]['loc_motionax'] = np.array([-1, 0, 0])
         self.rgt_inner_connectingrod.jnts[2]['loc_pos'] = np.array([0, .037, 0])
-        self.rgt_inner_connectingrod.jnts[2]['loc_rotmat'] = rm.rotmat_from_euler(-95.377/180*math.pi, 0, 0)
+        self.rgt_inner_connectingrod.jnts[2]['loc_rotmat'] = rm.rotmat_from_euler(-95.377 / 180 * math.pi, 0, 0)
         self.rgt_inner_connectingrod.jnts[2]['loc_motionax'] = np.array([-1, 0, 0])
         self.rgt_inner_connectingrod.jnts[3]['loc_pos'] = np.array([0, .0, 0])
-        self.rgt_inner_connectingrod.jnts[3]['loc_rotmat'] = rm.rotmat_from_euler(-174.62/180*math.pi, 0, 0)
+        self.rgt_inner_connectingrod.jnts[3]['loc_rotmat'] = rm.rotmat_from_euler(-174.62 / 180 * math.pi, 0, 0)
         self.rgt_inner_connectingrod.jnts[3]['loc_motionax'] = np.array([-1, 0, 0])
         # links
         # - lft_outer
@@ -90,12 +93,12 @@ class Ag145(gp.GripperInterface):
         self.lft_outer.lnks[1]['rgba'] = [0.792156862745098, 0.819607843137255, 0.933333333333333, 1]
         self.lft_outer.lnks[2]['name'] = "left_outer_finger"
         self.lft_outer.lnks[2]['loc_pos'] = np.zeros(3)
-        self.lft_outer.lnks[2]['mesh_file'] = os.path.join(this_dir, "meshes", "C1.stl")
+        self.lft_outer.lnks[2]['mesh_file'] = os.path.join(this_dir, "meshes", "C3.stl")
         self.lft_outer.lnks[2]['rgba'] = [.2, .2, .2, 1]
         self.lft_outer.lnks[3]['name'] = "left_inner_finger"
         self.lft_outer.lnks[3]['loc_pos'] = np.zeros(3)
         self.lft_outer.lnks[3]['mesh_file'] = os.path.join(this_dir, "meshes", "I.stl")
-        self.lft_outer.lnks[3]['rgba'] = [0,0,1, 1]
+        self.lft_outer.lnks[3]['rgba'] = [0, 0, 0, 0]
         # - lft_inner
         self.lft_inner.lnks[1]['name'] = "left_inner_knuckle"
         self.lft_inner.lnks[1]['loc_pos'] = np.zeros(3)
@@ -104,7 +107,7 @@ class Ag145(gp.GripperInterface):
         # - lft_inner_connectingrod
         self.lft_inner_connectingrod.lnks[1]['name'] = "lft_inner_connectingrod1"
         self.lft_inner_connectingrod.lnks[1]['loc_pos'] = np.zeros(3)
-        self.lft_inner_connectingrod.lnks[1]['mesh_file'] = os.path.join(this_dir, "meshes", "F.stl")
+        self.lft_inner_connectingrod.lnks[1]['mesh_file'] = os.path.join(this_dir, "meshes", "F2.stl")
         self.lft_inner_connectingrod.lnks[1]['rgba'] = [0.792156862745098, 0.819607843137255, 0.933333333333333, 1]
         self.lft_inner_connectingrod.lnks[2]['name'] = "lft_inner_connectingrod2"
         self.lft_inner_connectingrod.lnks[2]['loc_pos'] = np.zeros(3)
@@ -121,12 +124,12 @@ class Ag145(gp.GripperInterface):
         self.rgt_outer.lnks[1]['rgba'] = [0.792156862745098, 0.819607843137255, 0.933333333333333, 1]
         self.rgt_outer.lnks[2]['name'] = "right_outer_finger"
         self.rgt_outer.lnks[2]['loc_pos'] = np.zeros(3)
-        self.rgt_outer.lnks[2]['mesh_file'] = os.path.join(this_dir, "meshes", "C1.stl")
+        self.rgt_outer.lnks[2]['mesh_file'] = os.path.join(this_dir, "meshes", "C3.stl")
         self.rgt_outer.lnks[2]['rgba'] = [.2, .2, .2, 1]
         self.rgt_outer.lnks[3]['name'] = "right_inner_finger"
         self.rgt_outer.lnks[3]['loc_pos'] = np.zeros(3)
         self.rgt_outer.lnks[3]['mesh_file'] = os.path.join(this_dir, "meshes", "I.stl")
-        self.rgt_outer.lnks[3]['rgba'] = [0,0,1, 1]
+        self.rgt_outer.lnks[3]['rgba'] = [0, 0, 0, 0]
         # - rgt_inner
         self.rgt_inner.lnks[1]['name'] = "right_inner_knuckle"
         self.rgt_inner.lnks[1]['loc_pos'] = np.zeros(3)
@@ -135,7 +138,7 @@ class Ag145(gp.GripperInterface):
         # - rgt_inner_connectingrod
         self.rgt_inner_connectingrod.lnks[1]['name'] = "rgt_inner_connectingrod1"
         self.rgt_inner_connectingrod.lnks[1]['loc_pos'] = np.zeros(3)
-        self.rgt_inner_connectingrod.lnks[1]['mesh_file'] = os.path.join(this_dir, "meshes", "F.stl")
+        self.rgt_inner_connectingrod.lnks[1]['mesh_file'] = os.path.join(this_dir, "meshes", "F2.stl")
         self.rgt_inner_connectingrod.lnks[1]['rgba'] = [0.792156862745098, 0.819607843137255, 0.933333333333333, 1]
         self.rgt_inner_connectingrod.lnks[2]['name'] = "rgt_inner_connectingrod2"
         self.rgt_inner_connectingrod.lnks[2]['loc_pos'] = np.zeros(3)
@@ -156,9 +159,11 @@ class Ag145(gp.GripperInterface):
         # jaw width
         self.jawwidth_rng = [0, .145]
         # jaw center
-        self.jaw_center_pos = np.array([0, 0, .18169])  # position for initial state (fully open)
+        self.jaw_center_pos = np.array([0, 0, .15])  # position for initial state (fully open)
+        self.jaw_center_pos_ini = np.array([0, 0, .15])
         # relative jaw center pos
         self.jaw_center_pos_rel = self.jaw_center_pos - self.lft_outer.jnts[3]['loc_pos']
+        # self.jaw_center_pos_rel = np.array([0,0,self.lft_outer.jnts[1]['loc_pos'][2] + self.lft_outer.jnts[2]['loc_pos'][2] + self.lft_outer.jnts[3]['loc_pos'][2]])
         # collision detection
         self.all_cdelements = []
         self.enable_cc(toggle_cdprimit=enable_cc)
@@ -288,7 +293,9 @@ class Ag145(gp.GripperInterface):
         self.fk(motion_val)
         # TODO dynamically change jaw center
         # print(self.jaw_center_pos_rel)
-        self.jaw_center_pos=np.array([0,0,self.lft_outer.jnts[3]['loc_pos'][2]+self.jaw_center_pos_rel[2]])
+        # self.jaw_center_pos=np.array([0,0,-self.lft_outer.jnts[3]['loc_pos'][2]+self.jaw_center_pos_ini[2]])
+        self.newhight = math.sqrt(0.0865 * 0.0865 - (jaw_width / 2 - 0.016 + 0.0095) * (jaw_width / 2 - 0.016 + 0.0095)) + 0.10086 + 0.0255
+        self.jaw_center_pos = np.array([0, 0, self.newhight])
 
     def gen_stickmodel(self,
                        tcp_jntid=None,
@@ -381,9 +388,12 @@ if __name__ == '__main__':
     jawwidth = 0.145
     grpr.jaw_to(jawwidth)
     print(grpr.jaw_center_pos)
-    grpr.gen_meshmodel(toggle_tcpcs=True).attach_to(base)
+    # grpr.gen_meshmodel(toggle_tcpcs=True).attach_to(base)
     print(grpr.get_jawwidth())
-    gm.gen_sphere(grpr.get_jawwidth()).attach_to(base)
+    # gm.gen_sphere(grpr.get_jawwidth()).attach_to(base)
+    grpr.jaw_to(0.145)
+    grpr.gen_stickmodel(toggle_tcpcs=True).attach_to(base)
+    grpr.gen_meshmodel(rgba=[0,1,0,0.3],toggle_tcpcs=True).attach_to(base)
     # gm.gen_stick(np.array([0, 0, 0]), np.array([0, 0, 100])).attach_to(base)
 
     base.run()

@@ -486,7 +486,7 @@ def facets_noover(mesh, faceangle=.9):
         faceids = list(set(faceids) - set(adjidlist))
         if len(faceids) == 0:
             break
-    return [np.array(knownfacets), np.array(knownfacetnormals), np.array(knowncurvature)]
+    return [np.array(knownfacets, dtype="object"), np.array(knownfacetnormals, dtype="object"), np.array(knowncurvature, dtype="object")]
 
 
 def split(mesh, only_watertight=True, adjacency=None):

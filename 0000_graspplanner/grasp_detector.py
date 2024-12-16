@@ -21,9 +21,7 @@ import open3d as o3d
 # import open3d.geometry as o3dg
 import vision.depth_camera.pcd_data_adapter as vdda
 import robot_sim.end_effectors.gripper.robotiq85.robotiq85 as rtq85
-import robot_sim.end_effectors.gripper.robotiq140.robotiq140 as rtq140
-import robot_sim.end_effectors.gripper.dh60.dh60 as dh60
-import robot_sim.end_effectors.gripper.ag145.ag145 as ag145
+import robot_sim.end_effectors.gripper.dh60 as dh60
 import time
 
 
@@ -31,10 +29,7 @@ class ContactDetector():
     def __init__(self, objpath, objname, show_sample_contact=True):
         self.objname = objname
         self.objpath = objpath
-        # self.hand = dh60.Dh60()
-        self.hand = ag145.Ag145()
-        # self.hand = rtq85.Robotiq85()
-        # self.hand = rtq140.Robotiq140()
+
         self.load_feature()
 
         self.pcd_np = vdda.o3dpcd_to_parray(self.pcd)
@@ -42,7 +37,6 @@ class ContactDetector():
 
         self.show_obj_mesh(rgba=[0.5, 0.5, 0.5, 0.1])
         self.show_obj_pcd()
-        # base.run()
         # self.show_feature("vertex")
         self.surface_sampled_id, self.surface_sampled = self.sample_contact(self.surface_pnt, "uniform")
         self.edge_sampled_id, self.edge_sampled = self.sample_contact(self.edge_pnt, "voxel")
@@ -75,7 +69,6 @@ class ContactDetector():
         pair_normal = []
 
         self.pairing_contacts()
-        self.grasp_planning()
 
         base.run()
     def pairing_contacts(self):
@@ -147,10 +140,6 @@ class ContactDetector():
 
         self.pair_pnts = pair_pnts
         self.pair_pnts_id = pair_pnts_id
-        with open(f'./debug_data/{objname}/pair_pnts.pickle', 'wb') as file:
-            pickle.dump(pair_pnts, file)
-        with open(f'./debug_data/{objname}/pair_pnts_id.pickle', 'wb') as file:
-            pickle.dump(pair_pnts_id, file)
 
     def input_data_debug(self):
         for i, pnt in enumerate(self.corner_sampled):
@@ -173,29 +162,7 @@ class ContactDetector():
             #               rgba=[0, 0, 1, 0.5]).attach_to(base)
             gm.gen_arrow(pnt, self.surface_normal_sampled[i] * 0.1 + pnt, rgba=[0, 0, 1, 0.5]).attach_to(base)
             break
-    def grasp_planning(self, rot_num=6):
-        for pair in self.pair_pnts:
-            finger_center = np.mean(pair,axis=0)
-            jaw_width = np.linalg.norm(pair[1]-pair[0])*1.1
-            if jaw_width >=0.145:
-                continue
-            # gm.gen_sphere(finger_center, radius=0.01).attach_to(base)
-            contact_vector = rm.unit_vector(pair[1]-pair[0])
-            contact_rot = rm.rotmat_between_vectors(contact_vector, np.array([0,1,0]))
-            rot_list = [rm.rotmat_from_axangle(contact_vector, angle).dot(contact_rot) for angle in np.linspace(0, 2 * np.pi, rot_num)]
-            homo_list = [rm.homomat_from_posrot(finger_center, rot) for rot in rot_list]
 
-            for rot in rot_list:
-                # gm.gen_sphere(finger_center, radius=0.01).attach_to(base)
-                self.hand.grip_at_with_jcpose(gl_jaw_center_pos = finger_center, gl_jaw_center_rotmat = rot, jaw_width = jaw_width)
-                # self.hand.gen_meshmodel(toggle_tcpcs=True).attach_to(base)
-
-                if not self.hand.is_mesh_collided([self.collision_model]):
-                    self.hand.gen_meshmodel(rgba=[0,1,0,0.1]).attach_to(base)
-
-                # break
-            break
-        return 0
     def find_antipodal(self, detector, anchor, anchor_id, anchor_normal, target_pnts, target_pnts_id, target_normal, threshold = 0.0, debug = False):
         checker = trimesh.base.ray.ray_pyembree.RayMeshIntersector(detector.objtrm)
         inside_points = []
@@ -212,15 +179,6 @@ class ContactDetector():
                 inside_points_id.append(target_pnts_id[i])
                 inside_normal.append(target_normal[i])
                 if rm.unit_vector(target_normal[i]).dot(rm.unit_vector(anchor_normal)) < -threshold:
-                    #TODO
-                    # if a == "cc":
-                    #     XXXX
-                    #     contact_vector
-                    # elif a == "ce":
-                    #     xxxxx
-                    # elif a == "sc" or "se" or "ss":
-                    #     XXXXX
-
                     # print("ttt", rm.unit_vector(target_normal[i]).dot(rm.unit_vector(anchor_normal)))
                     anti_points.append([anchor, target_pnts[i]])
                     anti_points_id.append([anchor_id, target_pnts_id[i]])
@@ -416,7 +374,7 @@ class ContactDetector():
 if __name__ == '__main__':
     base = wd.World(cam_pos=[2.001557 / 2, 0.637317 / 2, 1.088133 / 2], w=960,
                     h=540, lookat_pos=[0, 0, 0])
-    gm.gen_frame().attach_to(base)
+    # gm.gen_frame().attach_to(base)
     this_dir, this_filename = os.path.split(__file__)
     # objpath = "kit_model_stl/Amicelli_800_tex.stl"
     # objpath = "kit_model_stl/CatSitting_800_tex.stl"
