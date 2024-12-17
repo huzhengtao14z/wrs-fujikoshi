@@ -90,7 +90,7 @@ if __name__ == '__main__':
     this_dir, this_filename = os.path.split(__file__)
     obj = cm.CollisionModel('objects/test_long_small.stl')
     obj.set_rgba([1, 1, 0, 0.5])
-    # obj.attach_to(base)
+    obj.attach_to(base)
     obj_ch= obj.objtrm.convex_hull
     vertices = obj_ch.vertices
     faces = obj_ch.faces
@@ -99,41 +99,25 @@ if __name__ == '__main__':
     convex_obj_gm = gm.GeometricModel(convex_obj)
     convex_obj_gm.set_rgba([1, 1, 0, 1])
     convex_obj_gm.attach_to(base)
-    facets, facetnormals, facetcurvatures = convex_obj.facets_noover(faceangle=0.95)
-    print(facets)
-
-    facets_center, facet_normal, facet_vertices = getFacetsCenter(convex_obj, facets)
-    for item in facets_center:
-        gm.gen_sphere(item).attach_to(base)
+    facets, facetnormals, facetcurvatures = convex_obj.facets_noover(faceangle=0.99)
     base.run()
-    obj.objtrm.export('kit_model_stl/Amicelli_800_tex.stl')
-    # base.run()
-    # obj.set_scale([1000, 1000,1000])
-    # obj2 = cm.CollisionModel('edgenool.STL')
-    # obj2.set_rgba([0, 1, 1, 1])
-    # obj2.attach_to(base)
-    # base.run()
-    Mesh = o3d.io.read_triangle_mesh('cutplane-intersectionEdgenool-1.stl')
-    # Mesh.compute_vertex_normals()
-    pcd1 = Mesh.sample_points_poisson_disk(number_of_points=50)
-    # pcd1, ind = pcd1.remove_radius_outlier(nb_points=15, radius=5)
-    pcd1_np = vdda.o3dpcd_to_parray(pcd1)
-    center1 = pcd1_np.mean(axis=0)
+    facets_center, facet_normal, facet_vertices = getFacetsCenter(convex_obj, facets)
+    # for id, item in enumerate(facets_center):
+    #     gm.gen_sphere(item, radius=0.005).attach_to(base)
+    #     gm.gen_arrow(item, item+facet_normal[id]*0.05).attach_to(base)
+    pos_list = [np.array([0,0,0])+center for center in facets_center]
+    rotmat_list = [rm.rotmat_between_vectors(normal, np.array([0,0,1])) for normal in facet_normal]
 
-    Mesh2 = o3d.io.read_triangle_mesh('cutplane-intersectionEdgenool-2.stl')
-    # Mesh.compute_vertex_normals()
-    pcd2 = Mesh2.sample_points_poisson_disk(number_of_points=50)
-    # pcd1, ind = pcd1.remove_radius_outlier(nb_points=15, radius=5)
-    pcd2_np = vdda.o3dpcd_to_parray(pcd2)
-    center2 = pcd2_np.mean(axis=0)
-    # pcd = o3d.io.read_point_cloud('cutplane-intersectionEdgenool.stl')
-    # pcd = o3d.io.read_point_cloud('pairtial/pairtial_pc/Amicelli_800_tex0.ply')
-    # o3d.visualization.draw_geometries([pcd])
-    # pcd_list = vdda.o3dpcd_to_parray(pcd1_np)
-    # kmeans = KMeans(n_clusters=2, random_state=0, n_init="auto").fit(pcd1_np)
-    gm.gen_sphere(center1, radius=1.5).attach_to(base)
-    gm.gen_sphere(center2, radius=1.5).attach_to(base)
-    # gm.gen_pointcloud(pcd1_np, pntsize=5).attach_to(base)
+    homo_list = [rm.homomat_from_posrot(pos_list[i], rotmat_list[i]) for i in range(len(pos_list))]
+    homo_inv_list = [np.linalg.inv(homo) for homo in homo_list]
+
+    displacement_list = list(np.linspace([0, 0, 0], [0.5, 0, 0], len(rotmat_list)))
+    displacement_homo_list = [rm.homomat_from_posrot(displacement_list[i]).dot(homo_inv_list[i]) for i in range(len(displacement_list))]
+    for homo in displacement_homo_list:
+        obj_copy = copy.deepcopy(obj)
+        obj_copy.set_homomat(homo)
+        obj_copy.attach_to(base)
+
     base.run()
 
     def update(textNode, count, task):
