@@ -31,7 +31,7 @@ class GoFaArmController:
     def get_pose(self, component_name, return_conf=False):
         raise NotImplementedError
 
-    def get_jnt_values(self, ):
+    def get_jnt_values(self):
         """
         get the joint angles of both arms
         :return: 1x6 array
